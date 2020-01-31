@@ -1,0 +1,58 @@
+version: '3.1'
+
+services:
+
+    ##############
+    # swagger-ui #
+    ##############
+    swagger-ui:
+        container_name: listing-db-swagger-ui
+        image: swaggerapi/swagger-ui:latest
+        ports:
+            - "8180:8080"
+        environment:
+            - API_URL=http://localhost:3000/
+        restart: always
+        networks:
+            - ppnet
+        depends_on:
+            - listing-db-postgrest
+
+    ##############
+    # kafka-topics-ui #
+    ##############
+    kafka-rest-proxy:
+        image: confluentinc/cp-kafka-rest:5.3.1
+        #hostname: kafka-rest-proxy
+        container_name: kafka-rest-proxy
+        ports:
+            - "8082:8082"
+        environment:
+            # KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_REST_LISTENERS: http://0.0.0.0:8082/
+            KAFKA_REST_SCHEMA_REGISTRY_URL: http://kafka-schema-registry:8081/
+            KAFKA_REST_HOST_NAME: kafka-rest-proxy
+            KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1:19092
+        depends_on:
+            - zookeeper
+            - kafka1
+            #- kafka-schema-registry
+        networks:
+            - ppnet
+            
+    kafka-topics-ui:
+        image: landoop/kafka-topics-ui:0.9.4
+        #hostname: kafka-topics-ui
+        container_name: kafka-topics-ui
+        ports:
+            - "8900:8000"
+        environment:
+            KAFKA_REST_PROXY_URL: "http://kafka-rest-proxy:8082/"
+            PROXY: "true"
+        depends_on:
+            - zookeeper
+            - kafka1
+            #- kafka-schema-registry
+            - kafka-rest-proxy
+        networks:
+            - ppnet

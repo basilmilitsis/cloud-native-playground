@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+
+    #################################################################
+    # Partner Web #
+    #################################################################
+
+    partner-web:
+        build: ./partner/partner-web
+        image: partner-web
+        container_name: partner-web
+        #context: ./partner-web
+        restart: always
+        ports:
+            - '4100:8080'
+        networks:
+            - ppnet
+        depends_on:
+        #    - kubemq
+            - kafka1

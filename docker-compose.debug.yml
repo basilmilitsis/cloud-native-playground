@@ -1,0 +1,51 @@
+version: '3.1'
+
+services:
+
+    #################################################################
+    # Consumer Web #
+    #################################################################
+
+    consumer-web:
+        command: npm run debug
+        ports:
+            - "4000:8080"
+            - "5860:5858"
+        volumes: 
+            - ./consumer/consumer-web/dist:/usr/src/app/dist
+
+    #################################################################
+    # Partner Web #
+    #################################################################
+
+    partner-web:
+        command: npm run debug
+        ports:
+            - "4100:8080"
+            - "5859:5858"
+        volumes: 
+            - ./partner/partner-web/dist:/usr/src/app/dist
+
+    #################################################################
+    # Listing Service #
+    #################################################################
+
+    listing-service:
+        command: npm run debug
+        ports:
+            - "3001:8080"
+            - "5858:5858"
+        volumes: 
+            - ./listing/listing-service/dist:/usr/src/app/dist
+
+    #################################################################
+    # Shape Service #
+    #################################################################
+
+    # shape-service:
+    #     command: npm run debug
+    #     ports:
+    #         - "3001:8080"
+    #         - "5857:5858"
+    #     volumes: 
+    #         - ./shape/shape-service/dist:/usr/src/app/dist

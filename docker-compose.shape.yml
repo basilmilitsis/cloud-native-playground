@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+
+    #################################################################
+    # Shape Service - SERVERLESS #
+    #################################################################
+
+    shape-service:
+        build: ./shape/shape-service
+        image: shape-service        
+        container_name: shape-service
+        restart: always
+        ports:
+            - '3500:3500'
+        networks:
+            - ppnet
+        volumes: 
+            - ./shape-service/dist:/usr/src/app/dist
+        depends_on:
+            - listing-db-postgrest
+            - kafka1

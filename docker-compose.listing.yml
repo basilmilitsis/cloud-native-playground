@@ -1,0 +1,93 @@
+version: '3.1'
+
+services:
+
+    #################################################################
+    # Listing Service #
+    #################################################################
+
+    listing-service:
+        build: ./listing/listing-service
+        image: listing-service        
+        container_name: listing-service
+        # context: ./listing-service
+        restart: always
+        ports:
+            - '3001:8080'
+        networks:
+            - ppnet
+        volumes: 
+            - ./listing/listing-service/dist:/usr/src/app/dist
+        depends_on:
+            - listing-db-postgrest
+           # - kubemq
+            - kafka1
+
+
+
+
+    listing-db-graphql:
+        container_name: listing-db-graphql
+        restart: always
+        image: postgraphile-filters
+        build:
+            context: ./listing/postgraphile-filters
+        # env_file:
+        #   - ./.env
+        networks:
+            - ppnet
+        ports:
+            - 5000:5000
+        command: [
+            #"--connection", "postgres://${LISTING_POSTGRES_USER}:${LISTING_POSTGRES_PASSWORD}@$listing-db:5432/${LISTING_POSTGRES_DB}",
+            "--connection", "postgres://$LISTING_POSTGRES_USER:$LISTING_POSTGRES_PASSWORD@listing-db:5432/${LISTING_POSTGRES_DB}",
+            #"--connection", "postgres://postgres:postgres@listing-db:5432/postgres",  #postgres://db_user:password@host:port/your_database
+            #"--port", "5433",
+            "--schema", "public",
+            "--watch",
+            "--append-plugins", "postgraphile-plugin-connection-filter",
+        ]
+        depends_on:
+            - listing-db
+
+
+            
+
+
+    listing-db-postgrest:
+        container_name: listing-db-postgrest
+        image: postgrest/postgrest:latest
+        restart: always
+        ports:
+            - "3000:3000"
+        environment:
+            # The standard connection URI format, documented at
+            # https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING
+            - PGRST_DB_URI=postgres://${LISTING_POSTGRES_USER}:${LISTING_POSTGRES_PASSWORD}@listing-db:5432/${LISTING_POSTGRES_DB}
+            # The name of which database schema to expose to REST clients
+            - PGRST_DB_SCHEMA=${LISTING_DB_SCHEMA}
+            # The database role to use when no client authentication is provided
+            - PGRST_DB_ANON_ROLE=${LISTING_DB_ANON_ROLE}
+        networks:
+            - ppnet
+        depends_on:
+            - listing-db
+            
+    listing-db:
+        container_name: listing-db
+        image: postgres:11-alpine
+        ports:
+            - "5432:5432"
+        environment:
+            - LISTING_POSTGRES_USER=${LISTING_POSTGRES_USER}
+            - LISTING_POSTGRES_PASSWORD=${LISTING_POSTGRES_PASSWORD}
+            - LISTING_POSTGRES_DB=${LISTING_POSTGRES_DB}
+            - LISTING_DB_ANON_ROLE=${LISTING_DB_ANON_ROLE}
+            - LISTING_DB_SCHEMA=${LISTING_DB_SCHEMA}
+        volumes:
+            # anything in initdb directory is created in the database
+            # see "How to extend this image" section at https://hub.docker.com/r/_/postgres/
+            - "./listing/listing-db/initdb:/docker-entrypoint-initdb.d"
+        networks:
+            - ppnet
+        restart: always

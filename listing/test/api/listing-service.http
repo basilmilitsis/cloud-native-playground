@@ -1,0 +1,18 @@
+###
+
+http://localhost:3001/all-listings
+
+###
+
+POST http://localhost:3001/new-listing HTTP/1.1
+content-type: application/json
+
+{
+    "id": 6,
+    "addr": "Street",
+    "price": 15000,
+    "suburb": "Umhlanga",
+    "agentid": 2
+}
+
+###

@@ -1,0 +1,33 @@
+# Calling against the POSTGREST SERVICE
+
+https://example.com/comments/1
+
+###
+
+http://localhost:3000/listing
+
+
+###
+
+http://localhost:3000/listing?id=eq.1
+
+###
+
+POST http://localhost:3000/listing HTTP/1.1
+content-type: application/json
+
+{
+    "id": 6,
+    "addr": "Street",
+    "price": 15000,
+    "suburb": "Umhlanga",
+    "agentid": 2
+}
+
+###
+
+DELETE http://localhost:3000/listing?id=eq.6 HTTP/1.1
+
+###
+
+DELETE http://localhost:3000/listing?id=eq.7 HTTP/1.1
