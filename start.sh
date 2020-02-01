@@ -2,7 +2,7 @@
 export DOCKER_HOST_IP=127.0.0.1
 
 docker-compose -f docker-compose.yml \
-               `#-f docker-compose.shape.yml` \
+               `# -f docker-compose.shape.yml` \
                -f docker-compose.listing.yml \
                -f docker-compose.consumer.yml \
                -f docker-compose.partner.yml \
@@ -10,4 +10,5 @@ docker-compose -f docker-compose.yml \
                -f docker-compose.override.yml \
                up \
                -d \
-               --build
+               --build \
+               --scale consumer-web=2
