@@ -10,8 +10,13 @@ const app = express();
 
 // Routes
 app.get('/', (req: any, res: any) => {
-  res.send('Consumer Web - enpoint - /');
+    res.send('Consumer Web - enpoint - /');
 });
+
+app.get('/dosomething', (req: any, res: any) => {
+    res.send('Consumer Web - enpoint - /dosomething');
+});
+    
 
 // Listen
 app.listen(PORT, HOST);
